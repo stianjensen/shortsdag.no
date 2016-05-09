@@ -1,0 +1,16 @@
+{
+  "name": "shortsdag.no",
+  "version": "0.0.1",
+  "description": "Shortsdag.no",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stian Jensen",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "express": "4.13.4",
+    "libxmljs": "0.17.1",
+    "request": "2.72.0"
+  }
+}
