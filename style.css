@@ -8,7 +8,6 @@ html {
     height: 100%;
 }
 body {
-    background: url('bg1.jpg') no-repeat center;
     background-size: cover;
     min-height: 100%;
     color: white;
@@ -18,4 +17,18 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+body.shorts-weather {
+    background: url('images/bg_shorts.jpg') no-repeat center;
+}
+body.cold-weather {
+    background: url('images/bg_cold.jpg') no-repeat center;
+}
+body.rain-weather {
+    background: url('images/bg_rain.jpg') no-repeat center;
+}
+body.snow-weather {
+    background: url('images/bg_snow.jpg') no-repeat center;
+    text-shadow: 0 0 5px #000;
 }
