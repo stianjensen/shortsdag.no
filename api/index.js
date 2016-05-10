@@ -19,7 +19,7 @@ app.use(function(req, res, next) {
 
 
 app.get('/', function(req, res) {
-  weatherData(function(error, data) {
+  weatherData.getWeatherData(function(error, data) {
     if (error) {
       res.status(500).end();
     } else {
@@ -41,7 +41,17 @@ app.get('/', function(req, res) {
 });
 
 app.get('/forecast/', function(req, res) {
-  weatherData(function(error, data) {
+  weatherData.getWeatherData(function(error, data) {
+    if (error) {
+      res.status(500).end();
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+app.get('/forecast/:lat/:long/', function(req, res) {
+  weatherData.getWeatherDataByCoords(req.params.lat, req.params.long, function(error, data) {
     if (error) {
       res.status(500).end();
     } else {
