@@ -1,7 +1,5 @@
 var express = require('express');
-var libxmljs = require('libxmljs');
-var request = require('request');
-
+var weatherData = require('./weather-data');
 
 var app = express();
 
@@ -19,34 +17,37 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/forecast/', function(req, res) {
-  var url = 'http://www.yr.no/stad/Noreg/Sør-Trøndelag/Trondheim/Trondheim/varsel.xml';
-  request(url, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var xmlDoc = libxmljs.parseXml(body);
 
-      var currentTimePeriod = xmlDoc.get('//tabular/time');
-
-      var temperature = currentTimePeriod.get('temperature/@value').value();
-      var windSpeed = currentTimePeriod.get('windSpeed/@mps').value();
-      var effectiveTemperature = 13.12 +
-                                 0.6215 * temperature -
-                                 11.37 * Math.pow(windSpeed, 0.16) +
-                                 0.3965 * temperature * Math.pow(windSpeed, 0.16);
-
-      var weatherData = {
-        temperature: Math.round(temperature),
-        effectiveTemperature: Math.round(effectiveTemperature),
-        windSpeed: windSpeed,
-        windDirection: currentTimePeriod.get('windDirection/@code').value(),
-        symbol: currentTimePeriod.get('symbol/@numberEx').value()
-      };
-
-      res.send(weatherData);
-    } else {
+app.get('/', function(req, res) {
+  weatherData(function(error, data) {
+    if (error) {
       res.status(500).end();
+    } else {
+      var shortsWeather = false;
+
+      // Effective temperature above 15 and sunny
+      if (data.effectiveTemperature >= 15 && data.symbol > 0 && data.symbol <= 3) {
+        shortsWeather = true;
+      }
+
+      // Effective temperature above 18 and cloudy
+      if (data.effectiveTemperature >= 18 && data.symbol == 4) {
+        shortsWeather = true;
+      }
+
+      res.send({shortsWeather: shortsWeather});
     }
-  })
+  });
+});
+
+app.get('/forecast/', function(req, res) {
+  weatherData(function(error, data) {
+    if (error) {
+      res.status(500).end();
+    } else {
+      res.send(data);
+    }
+  });
 });
 
 app.listen(8999, function() {
