@@ -24,10 +24,10 @@
       if ((data.symbol > 0 && data.symbol <= 4) || data.symbol == 15) {
         $('body').addClass('cold-weather');
       }
-      if (rainNumbers.indexOf(data.symbol) !== -1) {
+      if (rainNumbers.indexOf(+data.symbol) !== -1) {
         $('body').addClass('rain-weather');
       }
-      if (snowNumbers.indexOf(data.symbol) !== -1) {
+      if (snowNumbers.indexOf(+data.symbol) !== -1) {
         $('body').addClass('snow-weather');
       }
     }
