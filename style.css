@@ -27,7 +27,7 @@ body.cold-weather {
     background-image: url('images/bg_cold.jpg');
 }
 body.rain-weather {
-    background-image: url('images/bg_rain.jpg');
+    background-image: url('images/bg_rain.gif');
 }
 body.snow-weather {
     background-image: url('images/bg_snow.jpg');
