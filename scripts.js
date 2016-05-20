@@ -26,9 +26,11 @@
       }
       if (rainNumbers.indexOf(+data.symbol) !== -1) {
         $('body').addClass('rain-weather');
+        $('#video-background').attr('src', '/videos/rain.mp4');
       }
       if (snowNumbers.indexOf(+data.symbol) !== -1) {
         $('body').addClass('snow-weather');
+        $('#video-background').attr('src', '/videos/snow.mp4');
       }
     }
   }

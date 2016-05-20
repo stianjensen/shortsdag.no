@@ -27,9 +27,18 @@ body.cold-weather {
     background-image: url('images/bg_cold.jpg');
 }
 body.rain-weather {
-    background-image: url('images/bg_rain.gif');
 }
 body.snow-weather {
-    background-image: url('images/bg_snow.jpg');
     text-shadow: 0 0 5px #000;
+}
+
+#video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
 }
