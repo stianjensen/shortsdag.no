@@ -31,6 +31,9 @@ body.rain-weather {
 body.snow-weather {
     text-shadow: 0 0 5px #000;
 }
+body.rain-weather #video-background, body.snow-weather #video-background {
+    display: block;
+}
 
 #video-background {
   position: fixed;
@@ -41,4 +44,5 @@ body.snow-weather {
   z-index: -1;
   width: 100%;
   height: 100%;
+  display: none;
 }
