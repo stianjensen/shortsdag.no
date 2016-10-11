@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "express": "4.13.4",
-    "libxmljs": "0.17.1",
+    "pixl-xml": "^1.0.9",
     "request": "2.72.0"
   }
 }
