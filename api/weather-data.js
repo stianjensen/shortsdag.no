@@ -1,4 +1,4 @@
-var libxmljs = require('libxmljs');
+var XML = require('pixl-xml');
 var request = require('request');
 
 module.exports = {getWeatherData, getWeatherDataByCoords};
@@ -11,20 +11,19 @@ function getWeatherData(callback) {
     } else if (response.statusCode != 200) {
       callback(new Error(response.statusCode));
     } else {
-      var xmlDoc = libxmljs.parseXml(body);
+      var xmlDoc = XML.parse(body);
+      var currentTimePeriod = xmlDoc.forecast.tabular.time[0];
 
-      var currentTimePeriod = xmlDoc.get('//tabular/time');
-
-      var temperature = currentTimePeriod.get('temperature/@value').value();
-      var windSpeed = currentTimePeriod.get('windSpeed/@mps').value();
+      var temperature = currentTimePeriod.temperature.value;
+      var windSpeed = currentTimePeriod.windSpeed.mps;
       var effectiveTemperature = getEffectiveTemperature(temperature, windSpeed);
 
       var weatherData = {
         temperature: Math.round(temperature),
         effectiveTemperature: Math.round(effectiveTemperature),
         windSpeed: windSpeed,
-        windDirection: currentTimePeriod.get('windDirection/@code').value(),
-        symbol: currentTimePeriod.get('symbol/@numberEx').value()
+        windDirection: currentTimePeriod.windDirection.code,
+        symbol: currentTimePeriod.symbol.number,
       };
 
       callback(null, weatherData);
@@ -40,24 +39,25 @@ function getWeatherDataByCoords(lat, long, callback) {
     } else if (response.statusCode != 200) {
       callback(new Error(response.statusCode));
     } else {
-      var xmlDoc = libxmljs.parseXml(body);
+      var xmlDoc = XML.parse(body);
+      var currentTimePeriod = xmlDoc.product.time[0].location;
 
-      var currentTimePeriod = xmlDoc.get('//product/time/location');
-
-      var temperature = currentTimePeriod.get('temperature/@value').value();
-      var windSpeed = currentTimePeriod.get('windSpeed/@mps').value();
+      var temperature = currentTimePeriod.temperature.value;
+      var windSpeed = currentTimePeriod.windSpeed.mps;
       var effectiveTemperature = getEffectiveTemperature(temperature, windSpeed);
 
       // Symbols are weird in the met.no API
       // The first time data-point doesn't seem to have symbol data,
       // but the next one usually does.
-      var symbol = xmlDoc.get('//product/time/location/symbol/@number').value();
+      var symbol = xmlDoc.product.time.filter(function(timePeriod) {
+        return timePeriod.location.hasOwnProperty('symbol');
+      })[0].location.symbol.number;
 
       var weatherData = {
         temperature: Math.round(temperature),
         effectiveTemperature: Math.round(effectiveTemperature),
         windSpeed: windSpeed,
-        windDirection: currentTimePeriod.get('windDirection/@name').value(),
+        windDirection: currentTimePeriod.windDirection.name,
         symbol: symbol
       };
 
