@@ -16,6 +16,7 @@
       shortsWeather = true;
     }
 
+    $('#content-wrapper').removeClass('loading');
     if (shortsWeather) {
       $('#content-wrapper').html($('#shortsday-true').html());
       $('body').addClass('shorts-weather');
