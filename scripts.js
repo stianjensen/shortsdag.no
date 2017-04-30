@@ -22,7 +22,11 @@
     } else {
       $('#content-wrapper').html($('#shortsday-false').html());
       if ((data.symbol > 0 && data.symbol <= 4) || data.symbol == 15) {
-        $('body').addClass('cold-weather');
+        if (data.effectiveTemperature <= 0) {
+          $('body').addClass('cold-weather');
+        } else {
+          $('body').addClass('pants-weather');
+        }
       }
       if (rainNumbers.indexOf(+data.symbol) !== -1) {
         $('body').addClass('rain-weather');

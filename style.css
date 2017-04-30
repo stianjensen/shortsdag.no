@@ -26,6 +26,9 @@ body.shorts-weather {
 body.cold-weather {
     background-image: url('images/bg_cold.jpg');
 }
+body.pants-weather {
+    background-image: url('images/bg_pants.jpg');
+}
 body.rain-weather {
 }
 body.snow-weather {
