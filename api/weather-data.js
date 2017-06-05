@@ -26,7 +26,7 @@ function getWeatherData(callback) {
         symbol: currentTimePeriod.symbol.number,
       };
 
-      callback(null, weatherData);
+      isItShortsWeather(weatherData, callback);
     }
   });
 }
@@ -61,9 +61,44 @@ function getWeatherDataByCoords(lat, long, callback) {
         symbol: symbol
       };
 
-      callback(null, weatherData);
+      isItShortsWeather(weatherData, callback);
     }
   });
+}
+
+function isItShortsWeather(data, callback) {
+  // Symbol numbers documented here:
+  // http://om.yr.no/forklaring/symbol/
+  const rainNumbers = [40, 5, 41, 24, 6, 25, 42, 7, 43, 26, 20, 27, 46, 9, 10, 30, 22, 11, 47, 12, 48, 31, 23, 32];
+  const snowNumbers = [44, 8, 45, 28, 21, 29, 49, 13, 50, 33, 14, 34];
+
+  // Effective temperature above 15 and sunny
+  if (data.effectiveTemperature >= 15 && data.symbol > 0 && data.symbol <= 3) {
+    data.weather = 'shorts';
+  }
+
+  // Effective temperature above 18 and cloudy
+  if (data.effectiveTemperature >= 18 && data.symbol == 4) {
+    data.weather = 'shorts';
+  }
+
+  if (data.weather !== 'shorts') {
+    if ((data.symbol > 0 && data.symbol <= 4) || data.symbol == 15) {
+      if (data.effectiveTemperature <= 0) {
+        data.weather = 'freezing';
+      } else {
+        data.weather = 'pants';
+      }
+    }
+    if (rainNumbers.indexOf(+data.symbol) !== -1) {
+      data.weather = 'rain';
+    }
+    if (snowNumbers.indexOf(+data.symbol) !== -1) {
+      data.weather = 'snow';
+    }
+  }
+
+  callback(null, data);
 }
 
 // Adapted from http://om.yr.no/forklaring/symbol/effektiv-temperatur/
