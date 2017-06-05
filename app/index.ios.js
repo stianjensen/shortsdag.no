@@ -44,21 +44,35 @@ export default class Shortsdag extends Component {
   }
 
   render() {
-    console.log(this.state);
+    let forecastImage, forecastText;
+    if (this.state.forecast) {
+      const weather = this.state.forecast.weather;
+      if (weather === 'shorts') {
+        forecastImage = require('./images/bg_shorts.jpg');
+        forecastText = 'Det er shortsdag!';
+      } else if (weather === 'pants') {
+        forecastImage = require('./images/bg_pants.jpg');
+        forecastText = 'Det er ikke shortsdag :('
+      } else if (weather === 'freezing') {
+        forecastImage = require('./images/bg_cold.jpg');
+        forecastText = 'Det er ikke shortsdag :('
+      } else if (weather === 'snow') {
+        forecastImage = require('./images/bg_snow.jpg');
+        forecastText = 'Det er ikke shortsdag :('
+      } else if (weather === 'rain') {
+        forecastImage = require('./images/bg_rain.jpg');
+        forecastText = 'Det er ikke shortsdag :('
+      }
+    }
+
     return (
       <View style={styles.container}>
         { this.state.forecast
-          ? this.state.forecast.weather === 'shorts'
-            ? <Image style={styles.background} source={require('./images/bg_shorts.jpg')}>
-                <Text style={styles.shortsdag}>
-                  Det er shortsdag!
-                </Text>
-              </Image>
-            : <Image style={styles.background} source={require('./images/bg_pants.jpg')}>
-                <Text style={styles.notshortsdag}>
-                  Det er ikke shortsdag :(
-                </Text>
-              </Image>
+          ? <Image style={styles.background} source={forecastImage}>
+              <Text style={styles.shortsdag}>
+                {forecastText}
+              </Text>
+            </Image>
           : <Text style={styles.loading}>
               Kikker ut vinduet...
             </Text>
