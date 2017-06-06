@@ -5,8 +5,11 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  Modal,
+  TouchableHighlight,
 } from 'react-native';
+import Credits from './credits';
 
 const apiURL = 'https://shortsdag.no';
 
@@ -17,9 +20,14 @@ export default class Shortsdag extends Component {
     this.state = {
       appState: AppState.currentState,
       forecast: null,
+      modalVisible: false,
     };
 
     this.updateForecast();
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   updateForecast() {
@@ -97,6 +105,28 @@ export default class Shortsdag extends Component {
               Kikker ut vinduet...
             </Text>
         }
+
+        <TouchableHighlight
+          onPress={() => { this.setModalVisible(true) }}
+          style={styles.showModalButton}
+          >
+          <Text style={styles.showModalButtonText}>?</Text>
+        </TouchableHighlight>
+
+        <Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {alert("Modal has been closed.")}}
+          >
+          <Credits />
+          <TouchableHighlight
+            onPress={() => {this.setModalVisible(!this.state.modalVisible)}}
+            style={styles.showModalButton}
+            >
+            <Text style={styles.showModalButtonText}>X</Text>
+          </TouchableHighlight>
+        </Modal>
       </View>
     );
   }
@@ -131,6 +161,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
     backgroundColor: 'transparent',
+  },
+  showModalButton: {
+    position: 'absolute',
+    top: 30,
+    right: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  showModalButtonText: {
+    lineHeight: 40,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 
