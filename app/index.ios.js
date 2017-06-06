@@ -1,38 +1,42 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  AppState,
   StyleSheet,
   Text,
   View,
   Image
 } from 'react-native';
 
+const apiURL = 'https://shortsdag.no';
+
 export default class Shortsdag extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      forecast: null
+      appState: AppState.currentState,
+      forecast: null,
     };
 
-    const success = pos => {
+    this.updateForecast();
+  }
+
+  updateForecast() {
+    const success = async pos => {
       const url = '/api/forecast/'
             + pos.coords.latitude +'/'
             + pos.coords.longitude + '/';
-      fetch('http://localhost:8999' + url)
-        .then(response => response.json())
-        .then(data => {
-          this.setState({forecast: data});
-        });
+      const response = await fetch(apiURL + url);
+      const data = await response.json();
+      this.setState({forecast: data});
     };
 
-    const error = err => {
+    const error = async err => {
       const url = '/api/forecast/';
-      fetch('http://localhost:8999' + url)
-        .then(response => response.json())
-        .then(data => {
-          this.setState({forecast: data});
-        });
+      const response = await fetch(apiURL + url);
+      const data = await response.json();
+      this.setState({forecast: data});
     };
 
     const options = {
@@ -42,6 +46,22 @@ export default class Shortsdag extends Component {
 
     navigator.geolocation.getCurrentPosition(success, error, options)
   }
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = nextAppState => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      this.setState({forecast: null});
+      this.updateForecast();
+    }
+    this.setState({appState: nextAppState});
+  };
 
   render() {
     let forecastImage, forecastText;
