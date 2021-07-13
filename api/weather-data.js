@@ -36,7 +36,7 @@ function getWeatherDataByCoords(lat, long, callback) {
   request(url, function(error, response, body) {
     if (error) {
       callback(error);
-    } else if (response.statusCode != 200) {
+    } else if (response.statusCode < 200 || response.statusCode >= 300) {
       callback(new Error(response.statusCode));
     } else {
       var xmlDoc = XML.parse(body);
