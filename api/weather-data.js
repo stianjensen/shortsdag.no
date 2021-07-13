@@ -1,39 +1,6 @@
-var XML = require("pixl-xml");
 var request = require("request");
 
-module.exports = { getWeatherData, getWeatherDataByCoords };
-
-function getWeatherData(callback) {
-  var url =
-    "http://www.yr.no/stad/Noreg/Sør-Trøndelag/Trondheim/Trondheim/varsel.xml";
-  request(url, function (error, response, body) {
-    if (error) {
-      callback(error);
-    } else if (response.statusCode != 200) {
-      callback(new Error(response.statusCode));
-    } else {
-      var xmlDoc = XML.parse(body);
-      var currentTimePeriod = xmlDoc.forecast.tabular.time[0];
-
-      var temperature = currentTimePeriod.temperature.value;
-      var windSpeed = currentTimePeriod.windSpeed.mps;
-      var effectiveTemperature = getEffectiveTemperature(
-        temperature,
-        windSpeed
-      );
-
-      var weatherData = {
-        temperature: Math.round(temperature),
-        effectiveTemperature: Math.round(effectiveTemperature),
-        windSpeed: windSpeed,
-        windDirection: currentTimePeriod.windDirection.code,
-        symbol: currentTimePeriod.symbol.number,
-      };
-
-      isItShortsWeather(weatherData, callback);
-    }
-  });
-}
+module.exports = { getWeatherDataByCoords };
 
 function getWeatherDataByCoords(lat, long, callback) {
   var url =
@@ -53,14 +20,9 @@ function getWeatherDataByCoords(lat, long, callback) {
     } else if (response.statusCode < 200 || response.statusCode >= 300) {
       callback(new Error(response.statusCode));
     } else {
-      var xmlDoc = JSON.parse(body);
-      console.log(
-        "xmldoc",
-        xmlDoc,
-        xmlDoc.properties.timeseries[0].data.instant.details
-      );
+      var weather = JSON.parse(body);
       var currentTimePeriod =
-        xmlDoc.properties.timeseries[0].data.instant.details;
+        weather.properties.timeseries[0].data.instant.details;
 
       var temperature = currentTimePeriod.air_temperature;
       var windSpeed = currentTimePeriod.wind_speed;
@@ -70,7 +32,7 @@ function getWeatherDataByCoords(lat, long, callback) {
       );
 
       const fullSymbol =
-        xmlDoc.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+        weather.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
       const symbol = fullSymbol.split("_")[0];
 
       var weatherData = {
@@ -88,39 +50,52 @@ function getWeatherDataByCoords(lat, long, callback) {
 
 function isItShortsWeather(data, callback) {
   // Symbol numbers documented here:
-  // http://om.yr.no/forklaring/symbol/
-  const rainNumbers = [
+  // https://api.met.no/weatherapi/weathericon/2.0/documentation
+  const rainSymbols = [
+    "heavyrain",
+    "heavyrainandthunder",
+    "heavyrainshowers",
+    "heavyrainshowersandthunder",
+    "heavysleet",
+    "heavysleetandthunder",
+    "heavysleetshowers",
+    "heavysleetshowersandthunder",
+    "lightrain",
+    "lightrainandthunder",
     "lightrainshowers",
+    "lightrainshowersandthunder",
+    "lightsleet",
+    "lightsleetandthunder",
+    "lightsleetshowers",
+    "lightsleetshowersandthunder",
+    "rain",
+    "rainandthunder",
     "rainshowers",
-    41,
-    24,
-    6,
-    25,
-    42,
-    7,
-    43,
-    26,
-    20,
-    27,
-    46,
-    9,
-    10,
-    30,
-    22,
-    11,
-    47,
-    12,
-    48,
-    31,
-    23,
-    32,
+    "rainshowersandthunder",
+    "sleet",
+    "sleetandthunder",
+    "sleetshowers",
+    "sleetshowersandthunder",
   ];
-  const snowNumbers = [44, 8, 45, 28, 21, 29, 49, 13, 50, 33, 14, 34];
+  const snowSymbols = [
+    "heavysnow",
+    "heavysnowandthunder",
+    "heavysnowshowers",
+    "heavysnowshowersandthunder",
+    "lightsnow",
+    "lightsnowandthunder",
+    "lightsnowshowers",
+    "lightsnowshowersandthunder",
+    "snow",
+    "snowandthunder",
+    "snowshowers",
+    "snowshowersandthunder",
+  ];
 
-  const sunnyNumbers = ["partlycloudy", "clearsky", "fair"];
+  const sunnySymbols = ["partlycloudy", "clearsky", "fair"];
 
   // Effective temperature above 15 and sunny
-  if (data.effectiveTemperature >= 15 && sunnyNumbers.includes(data.symbol)) {
+  if (data.effectiveTemperature >= 15 && sunnySymbols.includes(data.symbol)) {
     data.weather = "shorts";
   }
 
@@ -131,7 +106,7 @@ function isItShortsWeather(data, callback) {
 
   if (data.weather !== "shorts") {
     if (
-      sunnyNumbers.includes(data.symbol) ||
+      sunnySymbols.includes(data.symbol) ||
       data.symbol == "cloudy" ||
       data.symbol == "fog"
     ) {
@@ -141,10 +116,10 @@ function isItShortsWeather(data, callback) {
         data.weather = "pants";
       }
     }
-    if (rainNumbers.includes(data.symbol)) {
+    if (rainSymbols.includes(data.symbol)) {
       data.weather = "rain";
     }
-    if (snowNumbers.includes(data.symbol)) {
+    if (snowSymbols.includes(data.symbol)) {
       data.weather = "snow";
     }
   }

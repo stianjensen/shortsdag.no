@@ -17,42 +17,6 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.get("/", function (req, res) {
-  weatherData.getWeatherData(function (error, data) {
-    if (error) {
-      res.status(500).end();
-    } else {
-      var shortsWeather = false;
-
-      // Effective temperature above 15 and sunny
-      if (
-        data.effectiveTemperature >= 15 &&
-        data.symbol > 0 &&
-        data.symbol <= 3
-      ) {
-        shortsWeather = true;
-      }
-
-      // Effective temperature above 18 and cloudy
-      if (data.effectiveTemperature >= 18 && data.symbol == 4) {
-        shortsWeather = true;
-      }
-
-      res.send({ shortsWeather: shortsWeather });
-    }
-  });
-});
-
-router.get("/forecast/", function (req, res) {
-  weatherData.getWeatherData(function (error, data) {
-    if (error) {
-      res.status(500).end();
-    } else {
-      res.send(data);
-    }
-  });
-});
-
 router.get("/forecast/:lat/:long/", function (req, res) {
   weatherData.getWeatherDataByCoords(
     req.params.lat,
