@@ -75,3 +75,7 @@ body.rain-weather #video-background, body.snow-weather #video-background {
     width: 1em;
   }
 }
+
+a {
+  color: #eee;
+}
