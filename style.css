@@ -79,3 +79,15 @@ body.rain-weather #video-background, body.snow-weather #video-background {
 a {
   color: #eee;
 }
+
+#footer {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  font-size: 0.4em;
+  color: #ddd;
+}
+
+#footer a {
+  color: #ddd;
+}
