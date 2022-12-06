@@ -16,7 +16,7 @@
   "author": "Stian Jensen",
   "license": "Apache-2.0",
   "dependencies": {
-    "express": "4.14.0",
+    "express": "4.17.3",
     "request": "2.72.0"
   }
 }
